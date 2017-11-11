@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using System.IO;
 
 namespace Semi2017 {
   public partial class Form1 : Form {
@@ -64,43 +66,86 @@ namespace Semi2017 {
     // Openボタンクリック時に呼ばれるメソッド
     //
     private void openToolStripMenuItem_Click(object sender, EventArgs e) {
-      //
-      // ダイアログを開き、指定されたフォルダパスを取得する
-      //
+            var openFolderDialog = new CommonOpenFileDialog();
+            openFolderDialog.IsFolderPicker = true;
+            openFolderDialog.EnsureReadOnly = true;
+            openFolderDialog.AllowNonFileSystemItems = false;
+            openFolderDialog.DefaultDirectory = Application.StartupPath;
 
-      //
-      // フォルダパスから、フォルダ内のjpgファイルパスを全て取得する
-      //
+            //ディレクトリのパスを取得
+            string path;
+            DirectoryInfo dir;
+            var result = openFolderDialog.ShowDialog(); //ダイアログを表示し，ユーザ操作の結果を返す
+            if (result == CommonFileDialogResult.Ok)
+            {
+                path = openFolderDialog.FileName; //選択されたフォルダのパスを取得
+                dir = new DirectoryInfo(path);
+                if (!dir.Exists)
+                {
+                    return; //ディレクトリが存在しない場合は何もしない
+                }
+            }
+            else
+            {
+                return; //キャンセルしたりダイアログが閉じられた場合は何もしない
+            }
 
-      //
-      // ビットマップ配列を生成し、全ての画像を読み込む
-      //
 
-      //
-      // 画像に関するデータの変数を格納する
-      //
 
-      //
-      // ピクチャーボックスに最初の画像を設定する
-      // 表示画像の切り替え方法
-      // 　pictureBox1.Image = [Bitmapの変数];
-      //
-    }
+            //
+            // フォルダパスから、フォルダ内のjpgファイルパスを全て取得する
+            //
+            var FileInfo = dir.GetFiles("*.jpg");
+            string[] ImageFilePath = new string[FileInfo.Length];
+
+            for (int i = 0; i < FileInfo.Length; i++)
+            {
+                //Console.WriteLine(FileInfo[i] + " : " + FileInfo[i].FullName);
+                ImageFilePath[i] = FileInfo[i].FullName;
+            }
+
+            //
+            // ビットマップ配列を生成し、全ての画像を読み込む
+            //
+            m_InputImageArray = new Bitmap[ImageFilePath.Length];
+            for (int i = 0; i < ImageFilePath.Length; i++)
+            {
+                m_InputImageArray[i] = new Bitmap(ImageFilePath[i]);
+            }
+
+            //
+            // 画像に関するデータの変数を格納する
+            //
+
+            //
+            // ピクチャーボックスに最初の画像を設定する
+            // 表示画像の切り替え方法
+            // 　pictureBox1.Image = [Bitmapの変数];
+            //
+            pictureBox1.Image = m_InputImageArray[0];
+
+            m_Width = m_InputImageArray[m_Index].Width; //画像の横の長さ
+            m_Height = m_InputImageArray[m_Index].Height; //画像の縦の長さ
+            m_NumPixel = m_Width * m_Height;  //画像の総ピクセル数
+        }
 
 
     //
     // NextImageボタンクリック時に呼ばれるメソッド
     //
     private void NextImageButton_Click(object sender, EventArgs e) {
-      //
-      // インデックスの変数を増加させ、表示する画像を切り替える
-      // 全ての画像を表示し終えたら最初の画像に戻る
-      //
-
-      //
-      // 表示画像の切り替え方法
-      // 　pictureBox1.Image = [Bitmapの変数];
-      //
+            //
+            // インデックスの変数を増加させ、表示する画像を切り替える
+            // 全ての画像を表示し終えたら最初の画像に戻る
+            //
+            if (m_InputImageArray == null) return;
+            m_Index++;
+            if (m_InputImageArray.Length - 1 < m_Index) m_Index = 0;
+            //
+            // 表示画像の切り替え方法
+            // 　pictureBox1.Image = [Bitmapの変数];
+            //
+            pictureBox1.Image = m_InputImageArray[m_Index];
     }
 
     //
@@ -111,5 +156,6 @@ namespace Semi2017 {
       // 画像処理実行コード
       //
     }
+
   }
 }

@@ -1,0 +1,14 @@
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\bin\Debug\Semi2017.exe.config
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\bin\Debug\Semi2017.exe
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\bin\Debug\Semi2017.pdb
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\bin\Debug\Microsoft.WindowsAPICodePack.dll
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\bin\Debug\Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.dll
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\bin\Debug\Microsoft.WindowsAPICodePack.Sensors.dll
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\bin\Debug\Microsoft.WindowsAPICodePack.ShellExtensions.dll
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.csprojResolveAssemblyReference.cache
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.Properties.Resources.resources
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.csproj.GenerateResource.Cache
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.csproj.CoreCompileInputs.cache
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.exe
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.pdb
