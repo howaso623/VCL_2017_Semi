@@ -1,0 +1,8 @@
+c:\users\watanabekeita\documents\visual studio 2015\Projects\Semi2016\Semi2016\bin\Debug\Semi2016.exe.config
+c:\users\watanabekeita\documents\visual studio 2015\Projects\Semi2016\Semi2016\bin\Debug\Semi2016.exe
+c:\users\watanabekeita\documents\visual studio 2015\Projects\Semi2016\Semi2016\bin\Debug\Semi2016.pdb
+c:\users\watanabekeita\documents\visual studio 2015\Projects\Semi2016\Semi2016\obj\Debug\Semi2016.csprojResolveAssemblyReference.cache
+c:\users\watanabekeita\documents\visual studio 2015\Projects\Semi2016\Semi2016\obj\Debug\Semi2016.Properties.Resources.resources
+c:\users\watanabekeita\documents\visual studio 2015\Projects\Semi2016\Semi2016\obj\Debug\Semi2016.csproj.GenerateResource.Cache
+c:\users\watanabekeita\documents\visual studio 2015\Projects\Semi2016\Semi2016\obj\Debug\Semi2016.exe
+c:\users\watanabekeita\documents\visual studio 2015\Projects\Semi2016\Semi2016\obj\Debug\Semi2016.pdb
