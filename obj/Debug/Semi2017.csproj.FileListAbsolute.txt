@@ -12,3 +12,4 @@ C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.csproj.Gene
 C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.csproj.CoreCompileInputs.cache
 C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.exe
 C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.pdb
+C:\Users\howas_000\Documents\GitHub\VCL_2017_Semi\obj\Debug\Semi2017.Form1.resources
