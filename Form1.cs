@@ -19,6 +19,11 @@ namespace Semi2017
         //
         private Bitmap m_AverageImage;
         private Bitmap m_VarianceImage;
+        private double[,] m_InputImageAverageArray;
+        private double[] m_AverageImageAverage;
+        private double[] m_VarianceImageAverage;
+        bool[] m_ExcludeImageFlagArray;
+        int m_Num_UnExcludeImage;
         //
         // フィールド
         //
@@ -132,6 +137,10 @@ namespace Semi2017
             m_Width = m_InputImageArray[m_Index].Width; //画像の横の長さ
             m_Height = m_InputImageArray[m_Index].Height; //画像の縦の長さ
             m_NumPixel = m_Width * m_Height;  //画像の総ピクセル数
+
+            m_Num_UnExcludeImage = m_InputImageArray.Length;
+            m_ExcludeImageFlagArray = new bool[m_InputImageArray.Length];
+
         }
 
 
@@ -164,10 +173,19 @@ namespace Semi2017
             //
             if (m_InputImageArray == null) return;
 
+            for (int i = 0; i < 3; i++)
+            {
+                CalcAverage();
+                pictureBox1.Image = m_AverageImage;
+                CalcVariance();
+                pictureBox1.Image = m_VarianceImage;
+                CalcPixelAverage();
+                ExclideFrame();
+            }
             CalcAverage();
             pictureBox1.Image = m_AverageImage;
-            CalcVariance();
-            pictureBox1.Image = m_VarianceImage;
+
+            Save();
         }
 
         private void Average_Click(object sender, EventArgs e)
@@ -196,21 +214,32 @@ namespace Semi2017
                     //RGBをそれぞれ枚数分合計
                     for (int i = 0; i < m_InputImageArray.Length; i++)
                     {
+                        #region Zemi Day3
+                        if (m_ExcludeImageFlagArray[i]) continue;
+                        #endregion
                         var pixelColor = m_InputImageArray[i].GetPixel(x, y);
                         colorSum[x, y, 0] += pixelColor.R;
                         colorSum[x, y, 1] += pixelColor.G;
                         colorSum[x, y, 2] += pixelColor.B;
                     }
                     //合計値を枚数で割り（平均），その値をm_AverageImageの画素の色にする
+                    /*
                     var red = (int)(colorSum[x, y, 0] / m_InputImageArray.Length);
                     var green = (int)(colorSum[x, y, 1] / m_InputImageArray.Length);
                     var blue = (int)(colorSum[x, y, 2] / m_InputImageArray.Length);
+                    */
+                    #region Zemi Day3
+                    var red = (int)(colorSum[x, y, 0] / m_Num_UnExcludeImage);
+                    var green = (int)(colorSum[x, y, 1] / m_Num_UnExcludeImage);
+                    var blue = (int)(colorSum[x, y, 2] / m_Num_UnExcludeImage);
+                    #endregion
+
                     m_AverageImage.SetPixel(x, y, Color.FromArgb(red, green, blue));
                 }
             }
         }
 
-        
+
         private void CalcVariance()
         {
             m_VarianceImage = new Bitmap(m_Width, m_Height);
@@ -229,6 +258,7 @@ namespace Semi2017
                     //RGBをそれぞれ枚数分合計
                     for (int i = 0; i < m_InputImageArray.Length; i++)
                     {
+                        if (m_ExcludeImageFlagArray[i]) continue;
                         var pixelColor = m_InputImageArray[i].GetPixel(x, y);
                         redSum += (avePixel.R - pixelColor.R) * (avePixel.R - pixelColor.R);
                         greenSum += (avePixel.G - pixelColor.G) * (avePixel.G - pixelColor.G);
@@ -236,10 +266,15 @@ namespace Semi2017
                     }
 
                     //平均との差の二乗を枚数で割る(平均) = 分散
+                    /*
                     colorVariance[x, y, 0] = redSum / m_InputImageArray.Length;
                     colorVariance[x, y, 1] = greenSum / m_InputImageArray.Length;
                     colorVariance[x, y, 2] = blueSum / m_InputImageArray.Length;
+                    */
 
+                    colorVariance[x, y, 0] = redSum / m_Num_UnExcludeImage;
+                    colorVariance[x, y, 1] = greenSum / m_Num_UnExcludeImage;
+                    colorVariance[x, y, 2] = blueSum / m_Num_UnExcludeImage;
                     // 分散の最大値を更新
                     maxVariance = Math.Max(maxVariance,
                                     Math.Max(colorVariance[x, y, 0],
@@ -259,6 +294,141 @@ namespace Semi2017
                     m_VarianceImage.SetPixel(x, y, Color.FromArgb(red, green, blue));
                 }
             }
+        }
+        private void CalcPixelAverage()
+        {
+            m_InputImageAverageArray = new double[m_InputImageArray.Length, 3]; //m_ImputImageArrayのそれぞれの画像の色の平均値を保存
+            m_AverageImageAverage = new double[3];  //m_AverageImageの画像の色の平均値を保存
+            m_VarianceImageAverage = new double[3]; //m_VarianceImageの画像の色の平均値を保存
+
+            var colorSumArr = new double[m_InputImageArray.Length, 3]; //m_ImputImageArrayの色の値の合計値を保存するためのバッファ
+            var colorSumAve = new double[3];    //m_AverageImageの色の値の合計値を保存するためのバッファ
+            var colorSumVar = new double[3];    //m_VarianceImageの色の値の合計値を保存するためのバッファ
+
+            /** m_ImputImageArrayのそれぞれの画像の色の平均値を求める **/
+            for (int i = 0; i < m_InputImageArray.Length; i++)
+            {
+                for (int x = 0; x < m_Width; x++)
+                {
+                    for (int y = 0; y < m_Height; y++)
+                    {
+                        var pixelColor = m_InputImageArray[i].GetPixel(x, y);
+                        colorSumArr[i, 0] += pixelColor.R;
+                        colorSumArr[i, 1] += pixelColor.G;
+                        colorSumArr[i, 2] += pixelColor.B;
+                    }
+                }
+                m_InputImageAverageArray[i, 0] = colorSumArr[i, 0] / m_NumPixel;
+                m_InputImageAverageArray[i, 1] = colorSumArr[i, 1] / m_NumPixel;
+                m_InputImageAverageArray[i, 2] = colorSumArr[i, 2] / m_NumPixel;
+
+                if (i == 0 || i == 8 || i == 14)
+                {
+                    Console.WriteLine("[{0}, 0] = " + m_InputImageAverageArray[i, 0], i);
+                    Console.WriteLine("[{0}, 1] = " + m_InputImageAverageArray[i, 1], i);
+                    Console.WriteLine("[{0}, 2] = " + m_InputImageAverageArray[i, 2], i);
+                }
+            }
+
+            /** m_AverageImageとm_VarianceImageのそれぞれの画像の色の平均値を求める **/
+            for (int x = 0; x < m_Width; x++)
+            {
+                for (int y = 0; y < m_Height; y++)
+                {
+                    var pixelColorAve = m_AverageImage.GetPixel(x, y);
+                    var pixelColorVar = m_VarianceImage.GetPixel(x, y);
+
+                    colorSumAve[0] += pixelColorAve.R;
+                    colorSumAve[1] += pixelColorAve.G;
+                    colorSumAve[2] += pixelColorAve.B;
+
+                    colorSumVar[0] += pixelColorVar.R;
+                    colorSumVar[1] += pixelColorVar.G;
+                    colorSumVar[2] += pixelColorVar.B;
+                }
+            }
+            m_AverageImageAverage[0] = colorSumAve[0] / m_NumPixel;
+            m_AverageImageAverage[1] = colorSumAve[1] / m_NumPixel;
+            m_AverageImageAverage[2] = colorSumAve[2] / m_NumPixel;
+
+            m_VarianceImageAverage[0] = colorSumVar[0] / m_NumPixel;
+            m_VarianceImageAverage[1] = colorSumVar[1] / m_NumPixel;
+            m_VarianceImageAverage[2] = colorSumVar[2] / m_NumPixel;
+
+            Console.WriteLine("[0] = " + m_AverageImageAverage[0]);
+            Console.WriteLine("[1] = " + m_AverageImageAverage[1]);
+            Console.WriteLine("[2] = " + m_AverageImageAverage[2]);
+
+            Console.WriteLine("[0] = " + m_VarianceImageAverage[0]);
+            Console.WriteLine("[1] = " + m_VarianceImageAverage[1]);
+            Console.WriteLine("[2] = " + m_VarianceImageAverage[2]);
+        }
+
+        private void ExclideFrame()
+        {
+            #region Zemi Day2
+            //
+            // 標準偏差の計算用
+            //
+            double[] standardDeviation = new double[3];
+            double[] substructAverage = new double[3];
+
+            // 標準偏差を計算
+            standardDeviation[0] = Math.Sqrt(m_VarianceImageAverage[0]);
+            standardDeviation[1] = Math.Sqrt(m_VarianceImageAverage[1]);
+            standardDeviation[2] = Math.Sqrt(m_VarianceImageAverage[2]);
+
+            //分散があまりに小さいときはこっち
+            /*
+            standardDeviation[0] = m_VarianceImageAverage[0];
+            standardDeviation[1] = m_VarianceImageAverage[1];
+            standardDeviation[2] = m_VarianceImageAverage[2];
+            */
+            #region Zemi Day3
+            m_Num_UnExcludeImage = 0;
+            #endregion
+
+            //
+            // 除外判定
+            //
+            for (int i = 0; i < m_InputImageArray.Length; i++)
+            {
+                //
+                // 平均画像の平均画素と現在処理している画像の平均画素の差の絶対値を求める
+                //
+                substructAverage[0] = Math.Abs(m_AverageImageAverage[0] - m_InputImageAverageArray[i, 0]);
+                substructAverage[1] = Math.Abs(m_AverageImageAverage[1] - m_InputImageAverageArray[i, 1]);
+                substructAverage[2] = Math.Abs(m_AverageImageAverage[2] - m_InputImageAverageArray[i, 2]);
+
+                //
+                // 条件判定
+                //
+                if (substructAverage[0] < standardDeviation[0] && substructAverage[1] < standardDeviation[1] && substructAverage[2] < standardDeviation[2])
+                {
+                    Console.WriteLine(i + "弾かない");
+                    #region Zemi Day3
+                    m_Num_UnExcludeImage++;
+                    #endregion
+                }
+                else
+                {
+                    Console.WriteLine(i + "弾く");
+
+                    #region Zemi Day3
+                    m_ExcludeImageFlagArray[i] = true;
+                    #endregion
+                }
+            }
+            #endregion
+        }
+
+        private void Save()
+        {
+            for (int i = 0; i < m_InputImageArray.Length; i++)
+            {
+                if (!m_ExcludeImageFlagArray[i]) m_InputImageArray[i].Save(i + ".bmp");
+            }
+            m_AverageImage.Save("Average.bmp");
         }
     }
 }
